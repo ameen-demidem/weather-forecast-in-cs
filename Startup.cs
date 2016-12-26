@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace WeatherMicroservice {
   public class Startup {
@@ -39,18 +40,9 @@ namespace WeatherMicroservice {
             forecast.Add(new WeatherReport(lat.Value, lng.Value, days));
           }
 
+          context.Response.ContentType = "application/json; charset=utf-8";
           await context.Response.WriteAsync(
-            $"Weather forecast for lat: {lat}, long: {lng}\n" +
-            $"  Today:\n" +
-            $"    {forecast[0].Format()}\n" +
-            $"  Tomorrow:\n" +
-            $"    {forecast[1].Format()}\n" +
-            $"  After tomorrow:\n" +
-            $"    {forecast[2].Format()}\n" +
-            $"  Three days from now:\n" +
-            $"    {forecast[3].Format()}\n" +
-            $"  Four days from now:\n" +
-            $"    {forecast[4].Format()}\n"
+            JsonConvert.SerializeObject(forecast, Formatting.Indented)
           );
         }
       });
@@ -65,15 +57,6 @@ namespace WeatherMicroservice {
       } else {
         return default(double?);
       }
-    }
-
-    public static string Format(this WeatherReport report) {
-      return (
-        $"General condition: {report.Conditions}, " +
-        $"Highest Temperature: {report.HiTemperature}, " +
-        $"Lowest Temperature: {report.LoTemperature}, " +
-        $"Average Wind Speed: {report.AverageWindSpeed}."
-      );
     }
   }
 }
