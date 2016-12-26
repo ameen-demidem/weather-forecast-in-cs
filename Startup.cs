@@ -30,8 +30,23 @@ namespace WeatherMicroservice {
       }
 
       app.Run(async (context) => {
-        await context.Response.WriteAsync("Hello World!");
+        var lat = context.Request.Query["lat"].FirstOrDefault().TryParse();
+        var lng = context.Request.Query["long"].FirstOrDefault().TryParse();
+        await context.Response.WriteAsync(
+          $"Retrieving Weather for lat: {lat}, long: {lng}"
+        );
       });
+    }
+  }
+
+  public static class Extensions {
+    public static double? TryParse(this string input) {
+      double result;
+      if (double.TryParse(input, out result)) {
+        return result;
+      } else {
+        return default(double?);
+      }
     }
   }
 }
